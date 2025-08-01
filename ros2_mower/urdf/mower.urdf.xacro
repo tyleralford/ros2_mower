@@ -37,21 +37,19 @@
   <xacro:property name="gps_y" value="0.21415" />
   <xacro:property name="gps_z" value="0.253" />
 
-  <!-- Base Link -->
+  <!-- Base Link (using exactly the structure Gazebo expects) -->
   <link name="base_link">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="${chassis_mass}"/>
+      <inertia ixx="${chassis_mass * (chassis_width*chassis_width + chassis_height*chassis_height) / 12}" 
+               ixy="0.0" ixz="0.0" 
+               iyy="${chassis_mass * (chassis_length*chassis_length + chassis_height*chassis_height) / 12}" 
+               iyz="0.0" 
+               izz="${chassis_mass * (chassis_length*chassis_length + chassis_width*chassis_width) / 12}"/>
+    </inertial>
     <visual>
-      <geometry>
-        <box size="0.01 0.01 0.01"/>
-      </geometry>
-      <material name="transparent">
-        <color rgba="0.0 0.0 0.0 0.0"/>
-      </material>
-    </visual>
-  </link>
-
-  <!-- Chassis Link -->
-  <link name="chassis">
-    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <box size="${chassis_length} ${chassis_width} ${chassis_height}"/>
       </geometry>
@@ -59,14 +57,13 @@
         <color rgba="0.0 0.0 1.0 1.0"/>
       </material>
     </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="${chassis_length} ${chassis_width} ${chassis_height}"/>
+      </geometry>
+    </collision>
   </link>
-
-  <!-- Chassis Joint -->
-  <joint name="base_to_chassis" type="fixed">
-    <parent link="base_link"/>
-    <child link="chassis"/>
-    <origin xyz="0.0 0.0 ${wheel_radius + chassis_height/2}" rpy="0 0 0"/>
-  </joint>
 
   <!-- Counterweight Link -->
   <link name="counterweight">
@@ -78,11 +75,24 @@
         <color rgba="0.5 0.5 0.5 1.0"/>
       </material>
     </visual>
+    <collision>
+      <geometry>
+        <box size="${counterweight_length} ${counterweight_width} ${counterweight_height}"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="${counterweight_mass}"/>
+      <inertia ixx="${counterweight_mass * (counterweight_width*counterweight_width + counterweight_height*counterweight_height) / 12}" 
+               ixy="0.0" ixz="0.0" 
+               iyy="${counterweight_mass * (counterweight_length*counterweight_length + counterweight_height*counterweight_height) / 12}" 
+               iyz="0.0" 
+               izz="${counterweight_mass * (counterweight_length*counterweight_length + counterweight_width*counterweight_width) / 12}"/>
+    </inertial>
   </link>
 
   <!-- Counterweight Joint -->
   <joint name="chassis_to_counterweight" type="fixed">
-    <parent link="chassis"/>
+    <parent link="base_link"/>
     <child link="counterweight"/>
     <origin xyz="-${(chassis_length + counterweight_length)/2} 0.0 -${(chassis_height - counterweight_height)/2}" rpy="0 0 0"/>
   </joint>
@@ -98,13 +108,27 @@
         <color rgba="0.0 0.0 0.0 1.0"/>
       </material>
     </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+      <geometry>
+        <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="${wheel_mass}"/>
+      <inertia ixx="${wheel_mass * (3*wheel_radius*wheel_radius + wheel_width*wheel_width) / 12}" 
+               ixy="0.0" ixz="0.0" 
+               iyy="${wheel_mass * wheel_radius*wheel_radius / 2}" 
+               iyz="0.0" 
+               izz="${wheel_mass * (3*wheel_radius*wheel_radius + wheel_width*wheel_width) / 12}"/>
+    </inertial>
   </link>
 
   <!-- Right Wheel Joint -->
   <joint name="right_wheel_joint" type="continuous">
     <parent link="base_link"/>
     <child link="right_wheel"/>
-    <origin xyz="0.0 -${wheel_separation/2} ${wheel_radius}" rpy="0 0 0"/>
+    <origin xyz="0.0 -${wheel_separation/2} -${chassis_height/2}" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
   </joint>
 
@@ -119,13 +143,27 @@
         <color rgba="0.0 0.0 0.0 1.0"/>
       </material>
     </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+      <geometry>
+        <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="${wheel_mass}"/>
+      <inertia ixx="${wheel_mass * (3*wheel_radius*wheel_radius + wheel_width*wheel_width) / 12}" 
+               ixy="0.0" ixz="0.0" 
+               iyy="${wheel_mass * wheel_radius*wheel_radius / 2}" 
+               iyz="0.0" 
+               izz="${wheel_mass * (3*wheel_radius*wheel_radius + wheel_width*wheel_width) / 12}"/>
+    </inertial>
   </link>
 
   <!-- Left Wheel Joint -->
   <joint name="left_wheel_joint" type="continuous">
     <parent link="base_link"/>
     <child link="left_wheel"/>
-    <origin xyz="0.0 ${wheel_separation/2} ${wheel_radius}" rpy="0 0 0"/>
+    <origin xyz="0.0 ${wheel_separation/2} -${chassis_height/2}" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
   </joint>
 
@@ -140,13 +178,27 @@
         <color rgba="1.0 1.0 1.0 1.0"/>
       </material>
     </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+      <geometry>
+        <cylinder radius="${front_roller_radius}" length="${front_roller_width}"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="${front_roller_mass}"/>
+      <inertia ixx="${front_roller_mass * (3*front_roller_radius*front_roller_radius + front_roller_width*front_roller_width) / 12}" 
+               ixy="0.0" ixz="0.0" 
+               iyy="${front_roller_mass * front_roller_radius*front_roller_radius / 2}" 
+               iyz="0.0" 
+               izz="${front_roller_mass * (3*front_roller_radius*front_roller_radius + front_roller_width*front_roller_width) / 12}"/>
+    </inertial>
   </link>
 
   <!-- Front Roller Joint -->
   <joint name="front_roller_joint" type="continuous">
     <parent link="base_link"/>
     <child link="front_roller"/>
-    <origin xyz="0.48 0.0 ${front_roller_radius}" rpy="0 0 0"/>
+    <origin xyz="0.48 0.0 -${chassis_height/2 + front_roller_radius}" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
   </joint>
 
@@ -161,13 +213,27 @@
         <color rgba="0.0 1.0 0.0 1.0"/>
       </material>
     </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+      <geometry>
+        <cylinder radius="${reel_radius}" length="${reel_width}"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="${reel_mass}"/>
+      <inertia ixx="${reel_mass * (3*reel_radius*reel_radius + reel_width*reel_width) / 12}" 
+               ixy="0.0" ixz="0.0" 
+               iyy="${reel_mass * reel_radius*reel_radius / 2}" 
+               iyz="0.0" 
+               izz="${reel_mass * (3*reel_radius*reel_radius + reel_width*reel_width) / 12}"/>
+    </inertial>
   </link>
 
   <!-- Reel Joint -->
   <joint name="reel_joint" type="continuous">
     <parent link="base_link"/>
     <child link="reel"/>
-    <origin xyz="0.30 0.0 ${reel_radius}" rpy="0 0 0"/>
+    <origin xyz="0.30 0.0 -${chassis_height/2 - 0.02}" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
   </joint>
 
@@ -181,11 +247,24 @@
         <color rgba="1.0 0.0 0.0 1.0"/>
       </material>
     </visual>
+    <collision>
+      <geometry>
+        <box size="0.05 0.05 0.05"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="${reel_motor_mass}"/>
+      <inertia ixx="${reel_motor_mass * (0.05*0.05 + 0.05*0.05) / 12}" 
+               ixy="0.0" ixz="0.0" 
+               iyy="${reel_motor_mass * (0.05*0.05 + 0.05*0.05) / 12}" 
+               iyz="0.0" 
+               izz="${reel_motor_mass * (0.05*0.05 + 0.05*0.05) / 12}"/>
+    </inertial>
   </link>
 
   <!-- Reel Motor Joint -->
   <joint name="chassis_to_reel_motor" type="fixed">
-    <parent link="chassis"/>
+    <parent link="base_link"/>
     <child link="reel_motor"/>
     <origin xyz="0.125 0.11 0.04" rpy="0 0 0"/>
   </joint>
@@ -200,13 +279,22 @@
         <color rgba="0.5 0.0 0.5 1.0"/>
       </material>
     </visual>
+    <collision>
+      <geometry>
+        <box size="0.02 0.02 0.01"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.000001" ixy="0.0" ixz="0.0" iyy="0.000001" iyz="0.0" izz="0.000001"/>
+    </inertial>
   </link>
 
   <!-- IMU Sensor Joint -->
   <joint name="base_to_imu" type="fixed">
     <parent link="base_link"/>
     <child link="imu_link"/>
-    <origin xyz="${imu_x} ${imu_y} ${imu_z}" rpy="0 0 0"/>
+    <origin xyz="${imu_x} ${imu_y} ${imu_z - wheel_radius - chassis_height/2}" rpy="0 0 0"/>
   </joint>
 
   <!-- GPS Sensor Link -->
@@ -219,13 +307,22 @@
         <color rgba="1.0 0.5 0.0 1.0"/>
       </material>
     </visual>
+    <collision>
+      <geometry>
+        <box size="0.03 0.03 0.01"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.000001" ixy="0.0" ixz="0.0" iyy="0.000001" iyz="0.0" izz="0.000001"/>
+    </inertial>
   </link>
 
   <!-- GPS Sensor Joint -->
   <joint name="base_to_gps" type="fixed">
     <parent link="base_link"/>
     <child link="gps_link"/>
-    <origin xyz="${gps_x} ${gps_y} ${gps_z}" rpy="0 0 0"/>
+    <origin xyz="${gps_x} ${gps_y} ${gps_z - wheel_radius - chassis_height/2}" rpy="0 0 0"/>
   </joint>
 
 </robot>
