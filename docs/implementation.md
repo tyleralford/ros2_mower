@@ -96,37 +96,41 @@ This document provides a sequential, step-by-step plan for the development of th
 *   **Depends on:** T05
 *   **Context:** Integrate `ros2_control` into the URDF for the simulation environment. This is the essential bridge that allows ROS controllers to interface with Gazebo's physics engine.
 *   **Subtasks:**
-    -   [ ] In `ros2_mower/urdf/mower.urdf.xacro`, add a `<ros2_control>` tag for a `GazeboSystem` plugin.
-    -   [ ] Inside this tag, define the `joint` interfaces for `left_wheel_joint`, `right_wheel_joint`, and `reel_joint`.
-    -   [ ] For each joint, specify the available command and state interfaces. For the wheels and reel, this will be `velocity`.
+    -   [x] In `ros2_mower/urdf/mower.urdf.xacro`, add a `<ros2_control>` tag for a `GazeboSystem` plugin.
+    -   [x] Inside this tag, define the `joint` interfaces for `left_wheel_joint`, `right_wheel_joint`, and `reel_joint`.
+    -   [x] For each joint, specify the available command and state interfaces. For the wheels and reel, this will be `velocity`.
 
 ### **T09: Create Controller Configuration File**
 *   **Depends on:** T08
 *   **Context:** Create the YAML file that defines which controllers to use and how they are configured. This separates controller configuration from the robot model, following the principle of separation of concerns.
 *   **Subtasks:**
-    -   [ ] Create a new file: `ros2_mower/config/mower_controllers.yaml`.
-    -   [ ] In this file, define the `controller_manager`.
-    -   [ ] Define the `diff_drive_controller`, setting its `type`, wheel joint names, `wheel_separation`, and `wheel_radius` as specified in the PRD.
-    -   [ ] Define the `joint_trajectory_controller` for the reel, setting its `type`, `joint` name, and specifying `velocity` as the command interface.
+    -   [x] Create a new file: `ros2_mower/config/mower_controllers.yaml`.
+    -   [x] In this file, define the `controller_manager`.
+    -   [x] Define the `diff_drive_controller`, setting its `type`, wheel joint names, `wheel_separation`, and `wheel_radius` as specified in the PRD.
+    -   [x] Define the `joint_trajectory_controller` for the reel, setting its `type`, `joint` name, and specifying `velocity` as the command interface.
 
 ### **T10: Update Gazebo Launch File to Load Controllers**
 *   **Depends on:** T09
 *   **Context:** Modify the simulation launch file to load the `ros2_control` system and start the controllers, making the robot controllable.
 *   **Subtasks:**
-    -   [ ] In `ros2_mower/launch/gazebo.launch.py`, add a node for the `spawner` from the `controller_manager` package.
-    -   [ ] Create two `spawner` executions: one to load the `diff_drive_controller` and another for the `joint_trajectory_controller`.
+    -   [x] In `ros2_mower/launch/gazebo.launch.py`, add a node for the `spawner` from the `controller_manager` package.
+    -   [x] Create two `spawner` executions: one to load the `diff_drive_controller` and another for the `joint_trajectory_controller`.
+    -   [x] **Issue Resolution:** Fixed snap package conflicts and Gazebo startup issues by adding environment variable unsets and `-r` flag for running simulation.
+    -   [x] **Timeout Fixes:** Increased controller switch timeout to 10 seconds to allow proper controller activation.
 
 ### **T11: Intermediate Test - Simulation Control Validation**
 *   **Depends on:** T10
 *   **Context:** Test the full simulation control stack by sending commands from the terminal. This validates that the entire chain from ROS topic to joint movement is working.
 *   **Subtasks:**
-    -   [ ] Build and launch `ros2_mower/launch/gazebo.launch.py`.
-    -   [ ] In a new terminal, check the active controllers: `ros2 control list_controllers`. Verify they are `active`.
-    -   [ ] In a new terminal, use `ros2 topic pub` to send a `geometry_msgs/Twist` message to `/diff_drive_controller/cmd_vel_unstamped`.
-    -   [ ] **Validation:**
-        -   [ ] Confirm the robot moves forward, backward, and turns in Gazebo in response to the commands.
-        -   [ ] Echo the `/diff_drive_controller/odom` topic and confirm it is publishing plausible odometry data.
-    -   [ ] Commit all work from Phase 3: `git commit -m "feat: Implement ros2_control for simulation"`.
+    -   [x] Build and launch `ros2_mower/launch/gazebo.launch.py`.
+    -   [x] In a new terminal, check the active controllers: `ros2 control list_controllers`. Verify they are `active`.
+    -   [x] In a new terminal, use `ros2 topic pub` to send a `geometry_msgs/TwistStamped` message to `/diff_drive_controller/cmd_vel`.
+    -   [x] **Validation:**
+        -   [x] Confirm the robot moves forward, backward, and turns in Gazebo in response to the commands.
+        -   [x] Echo the `/diff_drive_controller/odom` topic and confirm it is publishing plausible odometry data.
+        -   [x] Verify `/joint_states` topic publishes realistic wheel joint rotations and velocities.
+    -   [x] **Technical Notes:** Controllers use `TwistStamped` messages on `/diff_drive_controller/cmd_vel` topic instead of unstamped version.
+    -   [x] Commit all work from Phase 3: `git commit -m "feat: Implement ros2_control for simulation"`.
 
 ## **Phase 4: Simulation Sensors**
 

@@ -1,3 +1,6 @@
+---
+applyTo: "**"
+---
 You're a senior embedded software and robotics engineer. Study @docs/requirements.md and implement what's still missing in @docs/implementation.md. Implement each task and subtask in the project plan and respect task and subtask dependencies. Once finished a task or subtask, check it in the list and move to the next. It is critical to always keep the project plan up to date. If the plan calls for a test to be completed, ensure that the test is passed before moving on to the next step. Walk the user through any hardware testing that needs to be performed as you work through the implementation plan.
 
 VERY IMPORTANT:

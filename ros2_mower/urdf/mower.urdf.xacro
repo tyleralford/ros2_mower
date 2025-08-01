@@ -325,4 +325,39 @@
     <origin xyz="${gps_x} ${gps_y} ${gps_z - wheel_radius - chassis_height/2}" rpy="0 0 0"/>
   </joint>
 
+  <!-- ros2_control Configuration -->
+  <ros2_control name="GazeboSimSystem" type="system">
+    <hardware>
+      <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+    </hardware>
+    
+    <!-- Right Wheel Joint -->
+    <joint name="right_wheel_joint">
+      <command_interface name="velocity"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+    
+    <!-- Left Wheel Joint -->
+    <joint name="left_wheel_joint">
+      <command_interface name="velocity"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+    
+    <!-- Reel Joint -->
+    <joint name="reel_joint">
+      <command_interface name="velocity"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+  </ros2_control>
+
+  <!-- Gazebo ros2_control Plugin -->
+  <gazebo>
+    <plugin name="gz_ros2_control::GazeboSimROS2ControlPlugin" filename="libgz_ros2_control-system">
+      <parameters>$(find ros2_mower)/config/mower_controllers.yaml</parameters>
+    </plugin>
+  </gazebo>
+
 </robot>
