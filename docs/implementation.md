@@ -62,29 +62,31 @@ This document provides a sequential, step-by-step plan for the development of th
 *   **Depends on:** T02
 *   **Context:** Add the physical properties to the URDF that Gazebo needs to simulate the robot correctly. This step transitions the model from a purely visual object to a physical one.
 *   **Subtasks:**
-    -   [ ] In `ros2_mower/urdf/mower.urdf.xacro`, add a `<collision>` tag to every link. The geometry should match the `<visual>` tags.
-    -   [ ] Add an `<inertial>` tag to every link. Use the `<mass>` value from the PRD. For the `<inertia>` tensor, use the formulas for simple primitive shapes (box, cylinder), which can be calculated or left for Gazebo to auto-calculate.
+    -   [x] In `ros2_mower/urdf/mower.urdf.xacro`, add a `<collision>` tag to every link. The geometry should match the `<visual>` tags.
+    -   [x] Add an `<inertial>` tag to every link. Use the `<mass>` value from the PRD. For the `<inertia>` tensor, use the formulas for simple primitive shapes (box, cylinder), which can be calculated or left for Gazebo to auto-calculate.
 
 ### **T06: Create Basic Gazebo World and Launch File**
 *   **Depends on:** T05
 *   **Context:** Create a simple world for the robot to exist in and a launch file to start Gazebo and spawn the robot model.
 *   **Subtasks:**
-    -   [ ] Create a simple Gazebo world file (`ros2_mower/worlds/empty.world`) with a ground plane and basic lighting.
-    -   [ ] Create a new launch file: `ros2_mower/launch/gazebo.launch.py`.
-    -   [ ] In this file, add the logic to start the Gazebo server (`gzserver`) with your world file and the Gazebo client (`gzclient`).
-    -   [ ] Add a node for `spawn_entity.py` to spawn the `ros2_mower` model into the simulation.
-    -   [ ] Include the `robot_state_publisher` from T03.
+    -   [x] Create a simple Gazebo world file (`ros2_mower/worlds/empty.world`) with a ground plane and basic lighting.
+    -   [x] Create a new launch file: `ros2_mower/launch/gazebo.launch.py`.
+    -   [x] In this file, add the logic to start the Gazebo server (`gzserver`) with your world file and the Gazebo client (`gzclient`).
+    -   [x] Add a node for `spawn_entity.py` to spawn the `ros2_mower` model into the simulation.
+    -   [x] Include the `robot_state_publisher` from T03.
 
 ### **T07: Intermediate Test - Physics Validation**
 *   **Depends on:** T06
 *   **Context:** Build and launch the Gazebo simulation to ensure the robot's physical model is stable and interacts correctly with the world.
 *   **Subtasks:**
-    -   [ ] Build and source the workspace.
-    -   [ ] Run the launch file: `ros2 launch ros2_mower gazebo.launch.py`.
-    -   [ ] **Validation:**
-        -   [ ] Confirm Gazebo opens and the mower model is spawned into the world.
-        -   [ ] Confirm the mower falls to the ground plane and comes to rest stably without jittering, exploding, or falling through the floor.
-    -   [ ] Commit all work from Phase 2: `git commit -m "feat: Add Gazebo simulation with physics"`.
+    -   [x] Build and source the workspace.
+    -   [x] Run the launch file: `ros2 launch ros2_mower gazebo.launch.py`.
+    -   [x] **Validation:**
+        -   [x] Confirm Gazebo opens and the mower model is spawned into the world.
+        -   [x] Confirm the mower falls to the ground plane and comes to rest stably without jittering, exploding, or falling through the floor.
+    -   [x] **Issue Resolution:** Fixed URDF-to-SDF conversion issues by reordering link structure (inertial block first) and correcting robot positioning.
+    -   [x] **Positioning Fixes:** Corrected wheel, front roller placement and spawn height to ensure proper ground contact.
+    -   [x] Commit all work from Phase 2: `git commit -m "feat: Add Gazebo simulation with physics"`.
 
 ## **Phase 3: Simulation Control System**
 
