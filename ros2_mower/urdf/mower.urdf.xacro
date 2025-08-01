@@ -1,0 +1,231 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="robotic_reel_mower">
+
+  <!-- Xacro Properties for Dimensions -->
+  <xacro:property name="chassis_length" value="0.19" />
+  <xacro:property name="chassis_width" value="0.44" />
+  <xacro:property name="chassis_height" value="0.22" />
+  <xacro:property name="chassis_mass" value="2.27" />
+
+  <xacro:property name="counterweight_length" value="0.21" />
+  <xacro:property name="counterweight_width" value="0.13" />
+  <xacro:property name="counterweight_height" value="0.13" />
+  <xacro:property name="counterweight_mass" value="9.07" />
+
+  <xacro:property name="wheel_radius" value="0.0975" />
+  <xacro:property name="wheel_width" value="0.036" />
+  <xacro:property name="wheel_mass" value="1.81" />
+  <xacro:property name="wheel_separation" value="0.46" />
+
+  <xacro:property name="front_roller_radius" value="0.04445" />
+  <xacro:property name="front_roller_width" value="0.33" />
+  <xacro:property name="front_roller_mass" value="0.45" />
+
+  <xacro:property name="reel_radius" value="0.0875" />
+  <xacro:property name="reel_width" value="0.47" />
+  <xacro:property name="reel_mass" value="11.34" />
+
+  <xacro:property name="reel_motor_mass" value="1.0" />
+
+  <!-- IMU sensor position -->
+  <xacro:property name="imu_x" value="0.0775" />
+  <xacro:property name="imu_y" value="0.0875" />
+  <xacro:property name="imu_z" value="0.169" />
+
+  <!-- GPS sensor position -->
+  <xacro:property name="gps_x" value="0.0" />
+  <xacro:property name="gps_y" value="0.21415" />
+  <xacro:property name="gps_z" value="0.253" />
+
+  <!-- Base Link -->
+  <link name="base_link">
+    <visual>
+      <geometry>
+        <box size="0.01 0.01 0.01"/>
+      </geometry>
+      <material name="transparent">
+        <color rgba="0.0 0.0 0.0 0.0"/>
+      </material>
+    </visual>
+  </link>
+
+  <!-- Chassis Link -->
+  <link name="chassis">
+    <visual>
+      <geometry>
+        <box size="${chassis_length} ${chassis_width} ${chassis_height}"/>
+      </geometry>
+      <material name="blue">
+        <color rgba="0.0 0.0 1.0 1.0"/>
+      </material>
+    </visual>
+  </link>
+
+  <!-- Chassis Joint -->
+  <joint name="base_to_chassis" type="fixed">
+    <parent link="base_link"/>
+    <child link="chassis"/>
+    <origin xyz="0.0 0.0 ${wheel_radius + chassis_height/2}" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Counterweight Link -->
+  <link name="counterweight">
+    <visual>
+      <geometry>
+        <box size="${counterweight_length} ${counterweight_width} ${counterweight_height}"/>
+      </geometry>
+      <material name="gray">
+        <color rgba="0.5 0.5 0.5 1.0"/>
+      </material>
+    </visual>
+  </link>
+
+  <!-- Counterweight Joint -->
+  <joint name="chassis_to_counterweight" type="fixed">
+    <parent link="chassis"/>
+    <child link="counterweight"/>
+    <origin xyz="-${(chassis_length + counterweight_length)/2} 0.0 -${(chassis_height - counterweight_height)/2}" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Right Wheel Link -->
+  <link name="right_wheel">
+    <visual>
+      <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+      <geometry>
+        <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+      </geometry>
+      <material name="black">
+        <color rgba="0.0 0.0 0.0 1.0"/>
+      </material>
+    </visual>
+  </link>
+
+  <!-- Right Wheel Joint -->
+  <joint name="right_wheel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="right_wheel"/>
+    <origin xyz="0.0 -${wheel_separation/2} ${wheel_radius}" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+  </joint>
+
+  <!-- Left Wheel Link -->
+  <link name="left_wheel">
+    <visual>
+      <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+      <geometry>
+        <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+      </geometry>
+      <material name="black">
+        <color rgba="0.0 0.0 0.0 1.0"/>
+      </material>
+    </visual>
+  </link>
+
+  <!-- Left Wheel Joint -->
+  <joint name="left_wheel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="left_wheel"/>
+    <origin xyz="0.0 ${wheel_separation/2} ${wheel_radius}" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+  </joint>
+
+  <!-- Front Roller Link -->
+  <link name="front_roller">
+    <visual>
+      <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+      <geometry>
+        <cylinder radius="${front_roller_radius}" length="${front_roller_width}"/>
+      </geometry>
+      <material name="white">
+        <color rgba="1.0 1.0 1.0 1.0"/>
+      </material>
+    </visual>
+  </link>
+
+  <!-- Front Roller Joint -->
+  <joint name="front_roller_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="front_roller"/>
+    <origin xyz="0.48 0.0 ${front_roller_radius}" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+  </joint>
+
+  <!-- Reel Link -->
+  <link name="reel">
+    <visual>
+      <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+      <geometry>
+        <cylinder radius="${reel_radius}" length="${reel_width}"/>
+      </geometry>
+      <material name="green">
+        <color rgba="0.0 1.0 0.0 1.0"/>
+      </material>
+    </visual>
+  </link>
+
+  <!-- Reel Joint -->
+  <joint name="reel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="reel"/>
+    <origin xyz="0.30 0.0 ${reel_radius}" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+  </joint>
+
+  <!-- Reel Motor Link -->
+  <link name="reel_motor">
+    <visual>
+      <geometry>
+        <box size="0.05 0.05 0.05"/>
+      </geometry>
+      <material name="red">
+        <color rgba="1.0 0.0 0.0 1.0"/>
+      </material>
+    </visual>
+  </link>
+
+  <!-- Reel Motor Joint -->
+  <joint name="chassis_to_reel_motor" type="fixed">
+    <parent link="chassis"/>
+    <child link="reel_motor"/>
+    <origin xyz="0.125 0.11 0.04" rpy="0 0 0"/>
+  </joint>
+
+  <!-- IMU Sensor Link -->
+  <link name="imu_link">
+    <visual>
+      <geometry>
+        <box size="0.02 0.02 0.01"/>
+      </geometry>
+      <material name="purple">
+        <color rgba="0.5 0.0 0.5 1.0"/>
+      </material>
+    </visual>
+  </link>
+
+  <!-- IMU Sensor Joint -->
+  <joint name="base_to_imu" type="fixed">
+    <parent link="base_link"/>
+    <child link="imu_link"/>
+    <origin xyz="${imu_x} ${imu_y} ${imu_z}" rpy="0 0 0"/>
+  </joint>
+
+  <!-- GPS Sensor Link -->
+  <link name="gps_link">
+    <visual>
+      <geometry>
+        <box size="0.03 0.03 0.01"/>
+      </geometry>
+      <material name="orange">
+        <color rgba="1.0 0.5 0.0 1.0"/>
+      </material>
+    </visual>
+  </link>
+
+  <!-- GPS Sensor Joint -->
+  <joint name="base_to_gps" type="fixed">
+    <parent link="base_link"/>
+    <child link="gps_link"/>
+    <origin xyz="${gps_x} ${gps_y} ${gps_z}" rpy="0 0 0"/>
+  </joint>
+
+</robot>

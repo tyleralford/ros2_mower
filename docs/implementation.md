@@ -12,45 +12,47 @@ This document provides a sequential, step-by-step plan for the development of th
 *   **Depends on:** None
 *   **Context:** Create the foundational Git repository on GitHub and the local ROS 2 package structure. This ensures all work is version-controlled from the start, adhering to the principle of having a clean, managed codebase.
 *   **Subtasks:**
-    -   [ ] Use the GitHub CLI (`gh`) to create a new public repository named `ros2_mower`.
-    -   [ ] Clone the new repository to your local development machine: `git clone <repository_url>`.
-    -   [ ] Inside the repository, create a ROS 2 package: `ros2 pkg create --build-type ament_cmake ros2_mower`.
-    -   [ ] Create the required directories within the package: `ros2_mower/urdf`, `ros2_mower/launch`, `ros2_mower/config`, `ros2_mower/worlds`.
-    -   [ ] Add a `.gitignore` file to the repository root, populated with standard ROS 2, Python, and OS-specific ignores.
-    -   [ ] Make the first commit and push to the `main` branch: `git commit -m "feat: Initial project structure"` and `git push -u origin main`.
+    -   [x] Use the GitHub CLI (`gh`) to create a new public repository named `ros2_mower`.
+    -   [x] Clone the new repository to your local development machine: `git clone <repository_url>`.
+    -   [x] Inside the repository, create a ROS 2 package: `ros2 pkg create --build-type ament_cmake ros2_mower`.
+    -   [x] Create the required directories within the package: `ros2_mower/urdf`, `ros2_mower/launch`, `ros2_mower/config`, `ros2_mower/worlds`.
+    -   [x] Add a `.gitignore` file to the repository root, populated with standard ROS 2, Python, and OS-specific ignores.
+    -   [x] Make the first commit and push to the `main` branch: `git commit -m "feat: Initial project structure"` and `git push -u origin main`.
 
 ### **T02: Create the Core URDF with Xacro**
 *   **Depends on:** T01
 *   **Context:** Develop the robot's structural model using the `xacro` templating language. This allows us to define dimensions and properties as variables for easy modification, promoting maintainability and clarity.
 *   **Subtasks:**
-    -   [ ] Create a new file: `ros2_mower/urdf/mower.urdf.xacro`.
-    -   [ ] Define xacro properties for all key dimensions (track width, wheel diameter, chassis size, etc.) and masses as specified in the PRD.
-    -   [ ] Define the `base_link` as the root link.
-    -   [ ] Create the `chassis`, `counterweight`, `right_wheel`, `left_wheel`, `front_roller`, and `reel` links. Each link must have a `<visual>` tag with geometry matching the PRD.
-    -   [ ] Define all the necessary `joint` tags (`fixed` and `continuous`) to connect the links correctly based on the PRD's spatial relationships.
-    -   [ ] Add the `reel_motor` link and its fixed joint to the chassis.
+    -   [x] Create a new file: `ros2_mower/urdf/mower.urdf.xacro`.
+    -   [x] Define xacro properties for all key dimensions (track width, wheel diameter, chassis size, etc.) and masses as specified in the PRD.
+    -   [x] Define the `base_link` as the root link.
+    -   [x] Create the `chassis`, `counterweight`, `right_wheel`, `left_wheel`, `front_roller`, and `reel` links. Each link must have a `<visual>` tag with geometry matching the PRD.
+    -   [x] Define all the necessary `joint` tags (`fixed` and `continuous`) to connect the links correctly based on the PRD's spatial relationships.
+    -   [x] Add the `reel_motor` link and its fixed joint to the chassis.
 
 ### **T03: Create Visualization Launch File**
 *   **Depends on:** T02
 *   **Context:** Create a launch file to view the robot model in RViz2. This provides immediate visual feedback to validate the URDF structure, ensuring we are building on a correct foundation.
 *   **Subtasks:**
-    -   [ ] Create a new file: `ros2_mower/launch/view_robot.launch.py`.
-    -   [ ] In this launch file, add nodes for `robot_state_publisher` (to process the URDF) and `joint_state_publisher_gui` (to allow for manual joint animation).
-    -   [ ] Add a node to start `rviz2` with a basic configuration that displays the RobotModel and TF frames.
-    -   [ ] Ensure the launch file correctly finds and passes the `mower.urdf.xacro` file to the `robot_state_publisher`.
+    -   [x] Create a new file: `ros2_mower/launch/view_robot.launch.py`.
+    -   [x] In this launch file, add nodes for `robot_state_publisher` (to process the URDF) and `joint_state_publisher_gui` (to allow for manual joint animation).
+    -   [x] Add a node to start `rviz2` with a basic configuration that displays the RobotModel and TF frames.
+    -   [x] Ensure the launch file correctly finds and passes the `mower.urdf.xacro` file to the `robot_state_publisher`.
 
 ### **T04: Intermediate Test - Visual Validation**
 *   **Depends on:** T03
 *   **Context:** Build the package and run the visualization launch file to confirm the robot model is geometrically and kinematically correct before adding physics or control.
 *   **Subtasks:**
-    -   [ ] Build the package: `colcon build --symlink-install`.
-    -   [ ] Source the workspace: `source install/setup.bash`.
-    -   [ ] Run the launch file: `ros2 launch ros2_mower view_robot.launch.py`.
-    -   [ ] **Validation:**
-        -   [ ] Confirm the robot model appears in RViz2 without errors in the terminal.
-        -   [ ] Confirm all links are present and correctly positioned relative to each other.
-        -   [ ] Use the `joint_state_publisher_gui` sliders to move the wheels and reel joints and verify they rotate around the correct axes.
-    -   [ ] Commit all work from Phase 1: `git commit -m "feat: Add visual URDF and RViz launcher"`.
+    -   [x] Build the package: `colcon build --symlink-install`.
+    -   [x] Source the workspace: `source install/setup.bash`.
+    -   [x] Run the launch file: `ros2 launch ros2_mower view_robot.launch.py`.
+    -   [x] **Validation:**
+        -   [x] Confirm the robot model appears in RViz2 without errors in the terminal.
+        -   [x] Confirm all links are present and correctly positioned relative to each other.
+        -   [x] Use the `joint_state_publisher_gui` sliders to move the wheels and reel joints and verify they rotate around the correct axes.
+    -   [x] **Issue Resolution:** Fixed snap package conflicts that prevented RViz2 from launching by unsetting `GTK_PATH` and `GIO_MODULE_DIR` environment variables.
+    -   [x] **Additional Files:** Created `start_visualization.sh` script for convenient visualization launching with snap conflict workaround.
+    -   [x] Commit all work from Phase 1: `git commit -m "feat: Add visual URDF and RViz launcher"`.
 
 ## **Phase 2: Simulation Integration**
 
